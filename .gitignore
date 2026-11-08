@@ -1,0 +1,12 @@
+   # Keil build output and user settings
+   Objects/
+   Listings/
+   *.obj
+   *.OBJ
+   *.lst
+   *.m51
+   *.lnp
+   *.build_log.htm
+   *.uvopt
+   *.uvoptx
+   *.uvgui.*
