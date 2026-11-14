@@ -1,126 +1,120 @@
-# CAT4 – Human-Machine Interface using Matrix Keypad, LEDs, and Seven-Segment Display
+# CAT4 – Human-Machine Interface using Matrix Keypad, LEDs and Seven-Segment Display
 
-|Field|Details|
-|-|-|
-|**EXP**|CAT4 – Continuous Lab Evaluation-4 (25CS2741 Fundamentals of Internet of Things + Lab)|
-|**DATE**|03/08/2026|
-|**NAME OF EXP**|Human-Machine Interface using Matrix Keypad, LEDs, and Seven-Segment Display|
-|**HARDWARE SETUP / PLATFORM**|AT89S52 development board (8051 tool chain), Embedded C (Keil), 4×4 matrix keypad, seven-segment display, 4 LEDs, multimeter for hardware debug|
-|**TASK NO**|Single activity: keypad-controlled LED functions with seven-segment feedback (no sub-tasks)|
+| Field | Details |
+|---|---|
+| **EXP** | CAT4 – Continuous Lab Evaluation-4 (25CS2741 Fundamentals of Internet of Things + Lab) |
+| **DATE** | 03/08/2026 |
+| **NAME OF EXP** | Human-Machine Interface using Matrix Keypad, LEDs, and Seven-Segment Display |
+| **HARDWARE SETUP / PLATFORM** | AT89S52 microcontroller development board (8051 tool chain), Embedded C (Keil), register-level bare-metal, 4×4 matrix keypad, common-cathode seven-segment display, 4 LEDs, multimeter for hardware debug |
+| **TASK NO** | Single activity: keypad-driven seven-segment display and LED operations for keys 0 – 9 |
 
 ## Aim
 
-To interface a 4×4 matrix keypad, a seven-segment display and 4 LEDs with the AT89S52 microcontroller and perform different LED operations based on the key pressed. Whenever a valid key is pressed, its value is shown on the seven-segment display and the corresponding LED function is executed, without using Arduino APIs, HAL libraries or RTOS services.
+To design a simple embedded user interface for an AT89S52 microcontroller development board in which a 4×4 matrix keypad is the input device, a seven-segment display shows the value of the pressed key, and four LEDs show the operation linked to that key (single LED, running LED pattern, alternate LEDs, binary counter, all LEDs blink, all LEDs off and reset), using direct register access and without using Arduino APIs, HAL libraries or RTOS services.
 
 ## Hardware Setup
 
 **Platform:** AT89S52 (8051 family) development board
 
 **Components:**
-
-* 4 × LEDs (active high)
-* 4 × 1 kΩ resistors (one in series with each LED)
-* 4×4 matrix keypad
-* Seven-segment display
-* Breadboard and jumper wires
-* USB cable, power supply and digital multimeter
+- 4×4 matrix keypad
+- 1 × seven-segment display (common cathode)
+- 4 × LEDs (active high)
+- 4 × 1 kΩ resistors (one in series with each LED)
+- Connecting wires, power supply and digital multimeter
 
 **Pin connections:**
 
-|Pin|Connected to|Direction|
-|-|-|-|
-|P3.2|LED1 (via 1 kΩ) → GND|Output|
-|P3.3|LED2 (via 1 kΩ) → GND|Output|
-|P3.4|LED3 (via 1 kΩ) → GND|Output|
-|P3.5|LED4 (via 1 kΩ) → GND|Output|
-|P2.7, P2.6, P2.5, P2.4|Keypad scan lines (driven low one at a time)|Output|
-|P2.3, P2.2, P2.1, P2.0|Keypad sense lines (read to detect a pressed key)|Input|
-|P0.0 – P0.6|Seven-segment display segments a – g (the program's segment codes are for a common-cathode display and assume P0.0 = a … P0.6 = g)|Output|
+| Pin | Connected to | Direction |
+|---|---|---|
+| P0.0 – P0.6 | Seven-segment display segments a, b, c, d, e, f, g (common cathode to GND) | Output |
+| P2.7, P2.6, P2.5, P2.4 | Keypad rows R1, R2, R3, R4 (driven low one at a time) | Output |
+| P2.3, P2.2, P2.1, P2.0 | Keypad columns C1, C2, C3, C4 (read, pressed = 0) | Input |
+| P3.2 | LED1 (via 1 kΩ) → GND | Output |
+| P3.3 | LED2 (via 1 kΩ) → GND | Output |
+| P3.4 | LED3 (via 1 kΩ) → GND | Output |
+| P3.5 | LED4 (via 1 kΩ) → GND | Output |
 
 ## Circuit Diagram
 
-!\[Circuit Diagram](circuit.jpeg)
+![Circuit Diagram](circuit.png)
 
 ## Core Logic / Pseudocode
 
-Each valid key press shows the key value on the seven-segment display and runs the matching LED function.
+Whenever a valid key is pressed, its value is shown on the seven-segment display and the matching LED operation is executed.
 
-|Key|Seven-segment display|LED operation|
-|-|-|-|
-|1|1|LED1 ON|
-|2|2|LED2 ON|
-|3|3|LED3 ON|
-|4|4|LED4 ON|
-|5|5|Running LED pattern|
-|6|6|Alternate LEDs (1010 ↔ 0101)|
-|7|7|Binary counter (0–15)|
-|8|8|All LEDs blink|
-|9|9|All LEDs OFF|
-|0|0|Reset (LEDs OFF, display 0)|
+| Key | Seven-segment display | LED operation |
+|---|---|---|
+| 1 | 1 | LED1 ON |
+| 2 | 2 | LED2 ON |
+| 3 | 3 | LED3 ON |
+| 4 | 4 | LED4 ON |
+| 5 | 5 | Running LED pattern (LED1 → LED4, 3 rounds, 300 ms per step) |
+| 6 | 6 | Alternate LEDs (1010 ↔ 0101, 6 times, 400 ms each) |
+| 7 | 7 | Binary counter 0 – 15 (500 ms per count) |
+| 8 | 8 | All LEDs blink (5 times, 400 ms ON / 400 ms OFF) |
+| 9 | 9 | All LEDs OFF |
+| 0 | 0 | Reset system (all LEDs OFF, display shows 0) |
 
-**Keypad map** (scan line driven low, sense line that goes low):
+Keys A – F have no function and are ignored. After a pattern (keys 5 – 8) finishes, all LEDs are switched OFF.
 
-|Scan line|P2.3|P2.2|P2.1|P2.0|
-|-|-|-|-|-|
-|P2.7|1|2|3|4|
-|P2.6|5|6|7|8|
-|P2.5|9|0|A|B|
-|P2.4|C|D|E|F|
+**Keypad matrix (row driven low → keys read on the columns):**
 
-Keys A – F are scanned but have no function.
+| Row driven low | P2 value written | C1 (P2.3) | C2 (P2.2) | C3 (P2.1) | C4 (P2.0) |
+|---|---|---|---|---|---|
+| R1 (P2.7) | `0x7F` | 1 | 2 | 3 | 4 |
+| R2 (P2.6) | `0xBF` | 5 | 6 | 7 | 8 |
+| R3 (P2.5) | `0xDF` | 9 | 0 | A | B |
+| R4 (P2.4) | `0xEF` | C | D | E | F |
+
+**Seven-segment codes (common cathode, bit 0 = a … bit 6 = g):** 0 = `0x3F`, 1 = `0x06`, 2 = `0x5B`, 3 = `0x4F`, 4 = `0x66`, 5 = `0x6D`, 6 = `0x7D`, 7 = `0x07`, 8 = `0x7F`, 9 = `0x6F`.
+
+**LED output:** `external_led(pattern)` writes the lower 4 bits of `pattern` to P3.2 – P3.5 (bit 0 = LED1 … bit 3 = LED4) and keeps the other P3 bits unchanged.
 
 **Functions in the program:**
-
-* `keypad\\\\\\\_scan()` waits until a valid key is pressed and returns the key.
-* `display\\\\\\\_digit(value)` writes the segment code for the digit to P0.
-* `external\\\\\\\_led(pattern)` writes the lower 4 bits of the pattern to P3.2 – P3.5 without changing the other P3 pins.
-* `running\\\\\\\_led()` runs LED1 → LED4 three times (300 ms per step).
-* `alternate\\\\\\\_led()` alternates 1010 and 0101 six times (400 ms per step).
-* `binary\\\\\\\_counter()` counts 0 to 15 on the LEDs (500 ms per step).
-* `blink\\\\\\\_all()` blinks all LEDs five times (400 ms on, 400 ms off).
-* `delay\\\\\\\_ms(ms)` is a software delay loop.
-* The key-to-LED selection is a `switch` statement in `main()`.
+- `keypad_scan()` scans the keypad and returns the pressed key.
+- `display_digit(value)` shows a digit 0 – 9 on the seven-segment display.
+- `external_led(pattern)` drives the four LEDs.
+- `running_led()`, `alternate_led()`, `binary_counter()` and `blink_all()` run the LED patterns of keys 5 – 8.
+- `delay_ms(ms)` is a software delay loop (120 inner iterations per millisecond).
+- `main()` selects the LED operation of the pressed key with a `switch` statement.
 
 ```
-setup: display shows 0, P2 = 0xFF, P3 = 0x00 (all LEDs OFF)
+setup: P0 = segment code of 0 (display shows 0), P2 = 0xFF, P3 = 0x00 (all LEDs OFF)
 
 loop forever:
-    key = keypad\\\\\\\_scan()                  // waits here until a key is pressed
-    if key is '0' to '9':
-        display\\\\\\\_digit(key)               // show the digit on the seven-segment display
-
+    key = keypad_scan()                          // waits until a key is pressed and released
+    if key is '0' .. '9': display_digit(key)     // show the key on the seven-segment display
     switch (key):
-        '1': LED1 ON only
-        '2': LED2 ON only
-        '3': LED3 ON only
-        '4': LED4 ON only
-        '5': running\\\\\\\_led()
-        '6': alternate\\\\\\\_led()
-        '7': binary\\\\\\\_counter()
-        '8': blink\\\\\\\_all()
+        '1': LED1 ON          '2': LED2 ON          '3': LED3 ON          '4': LED4 ON
+        '5': running_led()    '6': alternate_led()  '7': binary_counter() '8': blink_all()
         '9': all LEDs OFF
-        '0': all LEDs OFF and display 0  // reset
-        other keys (A to F): ignored
+        '0': all LEDs OFF, display shows 0
+        other keys: no action
 
-keypad\\\\\\\_scan():
-    loop forever:
-        for each scan line P2.7, P2.6, P2.5, P2.4:
-            drive that line low and the other lines high
-            if any sense line P2.3 to P2.0 reads low:
-                delay 20 ms              // debounce
-                read the sense lines again
-                if a line is still low:
+keypad_scan():
+    loop:
+        for each row in (R1 = P2.7, R2 = P2.6, R3 = P2.5, R4 = P2.4):
+            drive this row low, keep the other rows high
+            if any column (P2.3 .. P2.0) reads 0:
+                wait 20 ms                       // debounce
+                read the columns again
+                if a key is still pressed:
                     wait until the key is released
-                    return the key for this scan line and sense line
+                    return the key of (row, column)
+
+running_led():     3 times: LED1, LED2, LED3, LED4 ON one after another (300 ms each); then all OFF
+alternate_led():   6 times: LED2 + LED4 ON, 400 ms; LED1 + LED3 ON, 400 ms; then all OFF
+binary_counter():  for n = 0 to 15: show n on the four LEDs, 500 ms; then all OFF
+blink_all():       5 times: all LEDs ON 400 ms, all LEDs OFF 400 ms
 ```
 
-**Debouncing:** a key press is detected when a sense line goes low. The program waits 20 ms, reads the lines again and accepts the key only if it is still pressed. It then waits for the key to be released, so one press produces exactly one action.
+**Debouncing:** when a column goes low, the program waits 20 ms and reads again. Only if a key is still pressed does it wait for the release and return the key, so one physical press gives exactly one key value.
 
-**Timing and input method:** no hardware timer and no interrupt is used. Delays come from software loops, and the keypad is polled. The keypad is not scanned while a pattern (keys 5 – 8) is running.
+**Timing and input method:** no hardware timer and no interrupt is used. All timing comes from the software delay loop, and the keypad is polled. The program is blocking, so a key pressed while a pattern is running is handled only after that pattern finishes.
 
-**Source file:** `ch4.c`
+**Source file:** `ch4.c` (uses only `<reg51.h>` for the register definitions, with direct writes to P0, P2 and P3).
 
-## Inference
+## INFERENCE
 
-The 4×4 keypad on P2 was scanned by driving one of P2.7 – P2.4 low at a time and reading P2.3 – P2.0. A 20 ms debounce and a wait for release made each key press count once. Each digit key was shown on the seven-segment display through P0 using a lookup table of segment codes, and the matching LED function on P3.2 – P3.5 was executed: a single LED for keys 1 – 4, and the running, alternating, binary-counter and blink patterns for keys 5 – 8. Key 9 turned all LEDs off, and key 0 reset the LEDs and the display. The program uses only register-level access, with no Arduino APIs, HAL libraries or RTOS. Because the keypad is scanned only between actions, keys are not read while a pattern is running.
-
+The keypad was scanned by driving one row low at a time and reading the four columns, with a 20 ms debounce and a wait for release, so every key press returned exactly one key value. The key value was shown on the seven-segment display through a lookup table written to P0, and the matching LED operation was executed on P3.2 – P3.5: single LEDs for keys 1 – 4, the running LED pattern, alternate LEDs, binary counter and all-LED blink for keys 5 – 8, and all LEDs OFF for key 9. Key 0 reset the system by switching all LEDs OFF and showing 0 on the display. Because the program polls the keypad and uses software delays, it only reads a new key after the current pattern finishes. The program uses only register-level access, with no Arduino APIs, HAL libraries or RTOS.
