@@ -1,0 +1,22 @@
+--cpu Cortex-M3
+"task-10c\startup_stm32f103xb.o"
+"task-10c\main.o"
+"task-10c\stm32f1xx_it.o"
+"task-10c\stm32f1xx_hal_msp.o"
+"task-10c\stm32f1xx_hal_gpio_ex.o"
+"task-10c\stm32f1xx_hal_uart.o"
+"task-10c\stm32f1xx_hal.o"
+"task-10c\stm32f1xx_hal_rcc.o"
+"task-10c\stm32f1xx_hal_rcc_ex.o"
+"task-10c\stm32f1xx_hal_gpio.o"
+"task-10c\stm32f1xx_hal_dma.o"
+"task-10c\stm32f1xx_hal_cortex.o"
+"task-10c\stm32f1xx_hal_pwr.o"
+"task-10c\stm32f1xx_hal_flash.o"
+"task-10c\stm32f1xx_hal_flash_ex.o"
+"task-10c\stm32f1xx_hal_exti.o"
+"task-10c\system_stm32f1xx.o"
+--strict --scatter "TASK-10C\TASK-10C.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "TASK-10C.map" -o TASK-10C\TASK-10C.axf

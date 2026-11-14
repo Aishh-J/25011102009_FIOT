@@ -1,0 +1,21 @@
+--cpu Cortex-M3
+"ex-1.1\startup_stm32f103xb.o"
+"ex-1.1\main.o"
+"ex-1.1\stm32f1xx_it.o"
+"ex-1.1\stm32f1xx_hal_msp.o"
+"ex-1.1\stm32f1xx_hal_gpio_ex.o"
+"ex-1.1\stm32f1xx_hal.o"
+"ex-1.1\stm32f1xx_hal_rcc.o"
+"ex-1.1\stm32f1xx_hal_rcc_ex.o"
+"ex-1.1\stm32f1xx_hal_gpio.o"
+"ex-1.1\stm32f1xx_hal_dma.o"
+"ex-1.1\stm32f1xx_hal_cortex.o"
+"ex-1.1\stm32f1xx_hal_pwr.o"
+"ex-1.1\stm32f1xx_hal_flash.o"
+"ex-1.1\stm32f1xx_hal_flash_ex.o"
+"ex-1.1\stm32f1xx_hal_exti.o"
+"ex-1.1\system_stm32f1xx.o"
+--strict --scatter "EX-1.1\EX-1_1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "EX-1_1.map" -o EX-1.1\EX-1_1.axf
