@@ -1,0 +1,22 @@
+--cpu Cortex-M3
+"project9.1.1\startup_stm32f103xb.o"
+"project9.1.1\main.o"
+"project9.1.1\stm32f1xx_it.o"
+"project9.1.1\stm32f1xx_hal_msp.o"
+"project9.1.1\stm32f1xx_hal_gpio_ex.o"
+"project9.1.1\stm32f1xx_hal_uart.o"
+"project9.1.1\stm32f1xx_hal.o"
+"project9.1.1\stm32f1xx_hal_rcc.o"
+"project9.1.1\stm32f1xx_hal_rcc_ex.o"
+"project9.1.1\stm32f1xx_hal_gpio.o"
+"project9.1.1\stm32f1xx_hal_dma.o"
+"project9.1.1\stm32f1xx_hal_cortex.o"
+"project9.1.1\stm32f1xx_hal_pwr.o"
+"project9.1.1\stm32f1xx_hal_flash.o"
+"project9.1.1\stm32f1xx_hal_flash_ex.o"
+"project9.1.1\stm32f1xx_hal_exti.o"
+"project9.1.1\system_stm32f1xx.o"
+--strict --scatter "Project9.1.1\Project9_1_1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Project9_1_1.map" -o Project9.1.1\Project9_1_1.axf
