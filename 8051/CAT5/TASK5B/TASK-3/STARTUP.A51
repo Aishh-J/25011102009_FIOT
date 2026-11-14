@@ -1,0 +1,9 @@
+; 8051 Startup Code for AT89S52
+CSEG AT 0000H
+LJMP STARTUP
+
+RSEG ?C_C51STARTUP
+STARTUP:
+    MOV SP, #07H
+    LJMP main
+    END
